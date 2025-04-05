@@ -15,6 +15,15 @@ class ExampleService(
     private val loadExampleByIdPort: LoadExampleByIdPort,
 ) : CreateExampleUseCase,
     UpdateExampleUseCase {
+    /**
+     * Creates a new [Example] aggregate with the given [command] and persists it.
+     *
+     * During the creation of the [Example] entity, an [ExampleCreatedEvent] is registered in the domain.
+     * It is expected that this event will be published as a side-effect when [saveExamplePort.execute] is called.
+     *
+     * The event publishing mechanism assumes that the persistence layer (e.g., JPA repository)
+     * triggers event dispatching after saving the entity, either via interceptor or AOP.
+     */
     @Transactional
     override fun execute(command: CreateExampleUseCase.Command): Long {
         val name = Name(command.name)
