@@ -31,13 +31,19 @@ class EventPublisherAspect(
      */
     @Around("hasServiceAnnotation()")
     fun execute(joinPoint: ProceedingJoinPoint): Any? {
+        // Clears the EventContext before executing the service logic
         EventContext.clearEvents()
-        try {
-            return joinPoint.proceed()
-        } finally {
+
+        return runCatching {
+            joinPoint.proceed()
+        }.onSuccess {
+            // Publishes any domain events that were registered but not yet published during service execution
             EventContext.raiseEvents { event ->
                 applicationEventPublisher.publishEvent(event)
             }
+        }.onFailure { throwable ->
+            EventContext.clearEvents()
+            throw throwable
         }
     }
 }
