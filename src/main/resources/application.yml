@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.jdbc.batch_size: 100
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/example-database
+    username: example
+    password: example
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      data-source-properties:
+        profileSQL: true
+        serverTimezone: Asia/Seoul
+        characterEncoding: UTF-8
+        rewriteBatchedStatements: true
