@@ -34,16 +34,16 @@ class EventPublisherAspect(
         // Clears the EventContext before executing the service logic
         EventContext.clearEvents()
 
-        return runCatching {
-            joinPoint.proceed()
-        }.onSuccess {
+        try {
+            val result = joinPoint.proceed()
             // Publishes any domain events that were registered but not yet published during service execution
             EventContext.raiseEvents { event ->
                 applicationEventPublisher.publishEvent(event)
             }
-        }.onFailure { throwable ->
+            return result
+        } catch (e: Throwable) {
             EventContext.clearEvents()
-            throw throwable
+            throw e
         }
     }
 }
